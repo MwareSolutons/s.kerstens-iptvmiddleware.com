@@ -261,6 +261,54 @@ public class RNDeviceModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void isCameraPresent(Promise p) { p.resolve(isCameraPresentSync()); }
 
+  
+    @SuppressLint("HardwareIds")
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public String getMacAddressEthernetSync() {
+    WifiInfo wifiInfo = getWifiInfo();
+    String macAddress = "";
+    if (wifiInfo != null) {
+      macAddress = wifiInfo.getMacAddress();
+    }
+
+    String permission = "android.permission.INTERNET";
+    int res = getReactApplicationContext().checkCallingOrSelfPermission(permission);
+
+    if (res == PackageManager.PERMISSION_GRANTED) {
+      try {
+        List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+        for (NetworkInterface nif : all) {
+          if (!nif.getName().equalsIgnoreCase("eth0")) continue;
+
+          byte[] macBytes = nif.getHardwareAddress();
+          if (macBytes == null) {
+            macAddress = "";
+          } else {
+
+            StringBuilder res1 = new StringBuilder();
+            for (byte b : macBytes) {
+              res1.append(String.format("%02X:",b));
+            }
+
+            if (res1.length() > 0) {
+              res1.deleteCharAt(res1.length() - 1);
+            }
+
+            macAddress = res1.toString();
+          }
+        }
+      } catch (Exception ex) {
+        // do nothing
+      }
+    }
+
+    return macAddress;
+  }
+
+  @ReactMethod
+  public void getMacAddressEthernet(Promise p) { p.resolve(getMacAddressEthernetSync()); }
+  
+  
   @SuppressLint("HardwareIds")
   @ReactMethod(isBlockingSynchronousMethod = true)
   public String getMacAddressSync() {

@@ -114,7 +114,23 @@ export function isCameraPresentSync() {
   }
   return false;
 }
+export async function getMacAddressEthernet() {
+  if (Platform.OS === 'android') {
+    return RNDeviceInfo.getMacAddressEthernet();
+  } else if (Platform.OS === 'ios') {
+    return '02:00:00:00:00:00';
+  }
+  return 'unknown';
+}
 
+export function getMacAddressEthernetSync() {
+  if (Platform.OS === 'android') {
+    return RNDeviceInfo.getMacAddressEthernetSync();
+  } else if (Platform.OS === 'ios') {
+    return '02:00:00:00:00:00';
+  }
+  return 'unknown';
+}
 export async function getMacAddress() {
   if (Platform.OS === 'android') {
     return RNDeviceInfo.getMacAddress();
@@ -1384,6 +1400,8 @@ const deviceInfoModule: DeviceInfoModule = {
   getLastUpdateTimeSync,
   getMacAddress,
   getMacAddressSync,
+  getMacAddressEthernet,
+  getMacAddressEthernetSync,
   getManufacturer,
   getManufacturerSync,
   getMaxMemory,
